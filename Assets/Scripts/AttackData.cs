@@ -2,10 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class AttackData
+[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/AttackData", order = 1)]
+public class AttackData : ScriptableObject
 {
     public float damage;
     public float knockback;
-    public Rect hitbox;
+    public Vector2 hitbox;
+
+    public AttackAnimationFrameData frameData;
+}
+
+[System.Serializable]
+public class AttackAnimationFrameData
+{
+    public int anticipation;
+    public int recovery;
 }

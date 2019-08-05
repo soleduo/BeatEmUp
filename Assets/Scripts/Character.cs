@@ -54,6 +54,8 @@ public class Character : MonoBehaviour
         for (int i = 0; i < attackDataList.Length; i++)
         {
             attacks[i] = new Attack(this, attackDataList[i]);
+            attacks[i].OnAttackConnects += AttackConnects;
+            attacks[i].OnAttackEnds += AttackEnd;
         }
 
         movement = new Movement(transform, defaultMoveSpeed);
@@ -72,24 +74,29 @@ public class Character : MonoBehaviour
             return;
 
         isAttacking = true;
-        DoAttack += () =>
-        {
-            isAttacking = !attacks[attackCount].TryAttack(dir) || (attackCount >= attacks.Length);
-            DoAttack = null;
+        
+        movement.MoveDone += () => {
+            animator.SetTrigger("action" + (attackCount + 1));
+            attacks[attackCount].StartAttack(dir);
         };
-
-        movement.MoveDone += () => { animator.SetTrigger("action" + (attackCount + 1)); };
         Movement(dir, target, defaulStep);
     }
 
-    public void StartAttack()
+    private void AttackConnects(bool isConnected)
     {
-        DoAttack?.Invoke();
-        attackCount++;
+        Debug.Log("Attack Connects " + isConnected);
+
+        if (isConnected)
+            attackCount++;
+
+        if (attackCount < attacks.Length)
+            isAttacking = !isConnected;
     }
 
-    public void AttackEnd()
+    private void AttackEnd()
     {
+        Debug.Log("Attack Ends");
+
         isAttacking = false;
         attackCount = 0;
     }
