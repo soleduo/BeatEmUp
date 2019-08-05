@@ -11,6 +11,7 @@ namespace soleduo.CharacterComponent
         protected Transform character;
 
         public event System.Action MoveDone;
+        bool isMoving;
 
         public Movement(Transform owner, float speed)
         {
@@ -20,9 +21,13 @@ namespace soleduo.CharacterComponent
 
         public void Move(Vector3 target, int frameCount = -1)
         {
+            if (isMoving)
+                return;
+
             Vector3 deltaPosition = (target - character.position);
             Vector2 direction = deltaPosition.normalized;
             float displacement = frameCount > 0 ? GetDisplacement(deltaPosition, frameCount) : baseSpeed * Time.fixedDeltaTime;
+            isMoving = true;
 
             UpdatePosition(direction, displacement, frameCount);
         }
@@ -44,6 +49,7 @@ namespace soleduo.CharacterComponent
             else
             {
                 MoveDone?.Invoke();
+                isMoving = false;
                 MoveDone = null;
             }
         }

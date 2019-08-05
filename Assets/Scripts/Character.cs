@@ -3,14 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using soleduo.CharacterComponent;
 
-public enum CharacterState
-{
-    idle,
-    attacking,
-    hit,
-    dying
-}
-
 public class Character : MonoBehaviour
 {
 
@@ -74,7 +66,9 @@ public class Character : MonoBehaviour
             return;
 
         isAttacking = true;
-        
+        if (isWaitingForAttackEnds != null)
+            LeanTween.cancel(isWaitingForAttackEnds.id);
+
         movement.MoveDone += () => {
             animator.SetTrigger("action" + (attackCount + 1));
             attacks[attackCount].StartAttack(dir);
@@ -86,23 +80,18 @@ public class Character : MonoBehaviour
     {
         Debug.Log("Attack Connects " + isConnected);
 
-        if (isConnected)
-            attackCount++;
-
+        attackCount++;
         isAttacking = !isConnected;
     }
 
     LTDescr isWaitingForAttackEnds;
     private void WaitForAttackEnds(int frameCount)
     {
-        Debug.Log("Attack Ends");
-        if (isWaitingForAttackEnds != null)
-            LeanTween.cancel(isWaitingForAttackEnds.id);
-
         isWaitingForAttackEnds = FrameUtility.WaitForFrame(frameCount, () =>
         {
             isAttacking = false;
             attackCount = 0;
+            Debug.Log("Attack Ends");
         });
     }
 

@@ -94,7 +94,7 @@ public class Spawner : MonoBehaviour {
         int r = typeCount > 1 ? Random.Range(0, typeCount) : 0;
         int r2 = Random.Range(0, 2);
 
-        Debug.Log(characters[r].name);
+        //Debug.Log(characters[r].name);
         GameObject go = GetPooledCharacter(characters[r].name);
         if (go != null)
         {
