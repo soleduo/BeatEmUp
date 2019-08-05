@@ -5,21 +5,12 @@ using soleduo.CharacterComponent;
 
 public class Character : MonoBehaviour
 {
+    protected float health = 3;
+    protected int defaulStep = 5;
 
+    [SerializeField]
+    protected CharacterData data;
 
-    public float health = 3;
-    public float damage = 1;
-    public float knockback;
-
-    int defaulStep = 5;
-    public int step = 5;
-    public float attackDelay = .01f;
-    public float attackRange = 1.2f;
-    public float maxAttackRange = 4f;
-
-    public float radius = 1;
-
-    public AttackData[] attackDataList;
     private Attack[] attacks;
     private Movement movement;
     [SerializeField]private AnimationController animator;
@@ -27,13 +18,13 @@ public class Character : MonoBehaviour
     protected delegate void OnDeathDelegate();
     protected OnDeathDelegate onDeath;
 
-    protected float defaultMoveSpeed = 1.5f;
-    float speed;
-
     protected soleduo.CharacterComponent.TargetManager targetManager;
     public soleduo.CharacterComponent.TargetManager Targetting { get { return targetManager; } }
 
     public GameObject mesh;
+    public CharacterData Data { get { return data; } }
+
+    public event System.Action OnComboWindowOpen;
 
     private void Start()
     {
@@ -42,15 +33,15 @@ public class Character : MonoBehaviour
 
     protected void Initialize()
     {
-        attacks = new Attack[attackDataList.Length];
-        for (int i = 0; i < attackDataList.Length; i++)
+        attacks = new Attack[data.attacks.Length];
+        for (int i = 0; i < data.attacks.Length; i++)
         {
-            attacks[i] = new Attack(this, attackDataList[i]);
+            attacks[i] = new Attack(this, data.attacks[i]);
             attacks[i].OnAttackConnects += AttackConnects;
             attacks[i].OnAttackEnds += WaitForAttackEnds;
         }
 
-        movement = new Movement(transform, defaultMoveSpeed);
+        movement = new Movement(transform, data.moveSpeed);
         targetManager = new TargetManager(this);
     }
 
@@ -67,7 +58,13 @@ public class Character : MonoBehaviour
 
         isAttacking = true;
         if (isWaitingForAttackEnds != null)
-            LeanTween.cancel(isWaitingForAttackEnds.id);
+        {
+            Debug.Log("Attack End is in queue, cancelling." + isWaitingForAttackEnds.uniqueId);
+            LeanTween.cancel(isWaitingForAttackEnds.uniqueId);
+        }
+
+        if (waitForCombo != null)
+            LeanTween.cancel(waitForCombo.uniqueId);
 
         movement.MoveDone += () => {
             animator.SetTrigger("action" + (attackCount + 1));
@@ -76,12 +73,15 @@ public class Character : MonoBehaviour
         Movement(dir, target, defaulStep);
     }
 
+    LTDescr waitForCombo;
     private void AttackConnects(bool isConnected)
     {
         Debug.Log("Attack Connects " + isConnected);
 
         attackCount++;
         isAttacking = !isConnected;
+
+        waitForCombo = FrameUtility.WaitForFrame(15, () => { isAttacking = true; });
     }
 
     LTDescr isWaitingForAttackEnds;
@@ -92,33 +92,12 @@ public class Character : MonoBehaviour
             isAttacking = false;
             attackCount = 0;
             Debug.Log("Attack Ends");
+            isWaitingForAttackEnds = null;
+            
         });
-    }
 
-    protected void SetSpeed(Character target)
-    {
-        speed = (target.transform.position - transform.position).magnitude / attackDelay;
-    }
-
-    protected void AttackMove(Character target)
-    {
-        step--;
-
-        Vector2 dir = (target.transform.position - transform.position).normalized;
-
-        transform.position += (Vector3)dir * speed * Time.fixedDeltaTime;
-        Debug.Log("Moving to target " + speed);
-
-        if(step == 1)
-            target.ApplyHit(damage, (target.transform.position - transform.position).normalized * knockback);
-
-        if (step > 0)
-            LeanTween.delayedCall(Time.fixedDeltaTime, () => { AttackMove(target); });
-        else
-        {            
-            step = defaulStep;
-            isAttacking = false;
-        }
+        OnComboWindowOpen?.Invoke();
+        Debug.Log("Start Waiting " + isWaitingForAttackEnds.uniqueId);
     }
 
     protected void Movement(float dir, Character target = null, int frameCount = -1)
@@ -133,9 +112,9 @@ public class Character : MonoBehaviour
             transform.localScale = new Vector3(-1, 1, 1);
 
         if (target == null)
-            targetPosition = transform.position + Vector3.right * dir * maxAttackRange;
+            targetPosition = transform.position + Vector3.right * dir * data.moveRange;
         else
-            targetPosition = target.transform.position + Vector3.right * -dir * attackRange;
+            targetPosition = target.transform.position + Vector3.right * -dir * data.attackRange;
 
         movement.Move(targetPosition, frameCount);
     }
@@ -154,18 +133,4 @@ public class Character : MonoBehaviour
 
         new Knockback(gameObject, knockForce, 6);
     }
-
-    //int knockbackDefaultStep = 4;
-    //int knockbackStep = 4;
-    //public void Knockback(Vector2 contact)
-    //{
-    //    transform.position += Vector3.right * -1 * Mathf.Sign(contact.x) * knockback / knockbackDefaultStep;
-    //    knockbackStep--;
-    //    Debug.Log(name + " knockback");
-
-    //    if (knockbackStep > 0)
-    //        LeanTween.delayedCall(Time.fixedDeltaTime, () => { Knockback(contact); });
-    //    else
-    //        knockbackStep = knockbackDefaultStep;
-    //}
 }

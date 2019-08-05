@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour {
     void Start () {
         target = null;
         move = 0;
+        player.OnComboWindowOpen += () => TryConsumeAttackInput();
 	}
 	
 	// Update is called once per frame
@@ -45,11 +46,18 @@ public class PlayerController : MonoBehaviour {
 
     private bool TryConsumeAttackInput()
     {
+        if (inputStack.Count <= 0)
+            return false;
+
         if (player.IsAttacking)
         {
-            consumeInput = LeanTween.delayedCall(3 * Time.fixedDeltaTime, () => TryConsumeAttackInput());
+            if(consumeInput != null)
+                LeanTween.cancel(consumeInput.uniqueId);
+
+            consumeInput = LeanTween.delayedCall(6 * Time.fixedDeltaTime, () => { inputStack.Clear(); consumeInput = null; });
             return false;
         }
+
         int i = inputStack.Pop();
         Character target = GetNearestTargetDirected(i);
         player.AttackInit(i, target);
@@ -71,7 +79,7 @@ public class PlayerController : MonoBehaviour {
         {
             if (c == player)
                 continue;
-            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.maxAttackRange, c.radius).isCollide)
+            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.Data.moveRange, c.Data.radius).isCollide)
                 continue;
 
             //Debug.Log(c.name + " is found");
@@ -91,7 +99,7 @@ public class PlayerController : MonoBehaviour {
                 continue;
             if ((c.transform.position.x - player.transform.position.x) * dir < 0)
                 continue;
-            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.maxAttackRange, c.radius).isCollide)
+            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.Data.attackRange, c.Data.radius).isCollide)
                 continue;
 
             //Debug.Log(c.name + " is found");
@@ -108,6 +116,6 @@ public class PlayerController : MonoBehaviour {
         else
             Gizmos.color = Color.red * new Color(1, 1, 1, 0.3f);
 
-        Gizmos.DrawCube(player.transform.position, new Vector2(player.maxAttackRange * 2 + 1, 5f));
+        Gizmos.DrawCube(player.transform.position, new Vector2(player.Data.moveRange * 2 + 1, 5f));
     }
 }

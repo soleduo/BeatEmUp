@@ -12,14 +12,12 @@ public class Enemy : Character {
     private void Awake()
     {
         if (blink == null)
-            blink = GetComponent<BlinkObject>();
+            blink = mesh.GetComponent<BlinkObject>();
     }
 
     // Use this for initialization
     void Start () {
         player = GameManager.GetPlayer();
-        attackRange = 1.25f;
-        defaultMoveSpeed = 2f;
 
         onDeath += Death;
 
@@ -28,14 +26,14 @@ public class Enemy : Character {
 
     private void OnEnable()
     {
-        health = 3;
+        health = data.hitPoint;
     }
     float remainingDistance;
 	// Update is called once per frame
 	void Update () {
         remainingDistance = CollisionCheck.GetDistance(transform.position, player.transform.position);
 
-        if(remainingDistance < attackRange)
+        if(remainingDistance < data.attackRange)
         {
             //AttackInit(player);
             return;

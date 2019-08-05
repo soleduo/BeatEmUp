@@ -22,9 +22,9 @@ namespace soleduo.CharacterComponent
             foreach (Character character in targetList)
             {
                 CollisionInfo1D collision = CollisionCheck.CheckCollision1D(owner.transform.position.x, character.transform.position.x,
-                    attackDistance, character.radius, direction);
+                    attackDistance, character.Data.radius, direction);
 
-                Debug.Log(string.Format("Collision Check {0}", character.name));
+                //Debug.Log(string.Format("Collision Check {0}", character.name));
                 if (!collision.isCollide)
                     continue;
 

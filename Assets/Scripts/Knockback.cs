@@ -18,7 +18,7 @@ public class Knockback {
 
         //Debug.Log(frameCount);
         if (frameCount > 0)
-            LeanTween.delayedCall(Time.deltaTime, () => { DoKnockback(go, force, frameCount-1); });
+            LeanTween.delayedCall(Time.fixedDeltaTime, () => { DoKnockback(go, force, frameCount-1); });
 
     }
 }

@@ -44,7 +44,7 @@ namespace soleduo.CharacterComponent
 
             if (frameCount > 0)
             {
-                LeanTween.delayedCall(Time.deltaTime, () => { UpdatePosition(direction, displacement, frameCount); });
+                LeanTween.delayedCall(Time.fixedDeltaTime, () => { UpdatePosition(direction, displacement, frameCount); });
             }
             else
             {

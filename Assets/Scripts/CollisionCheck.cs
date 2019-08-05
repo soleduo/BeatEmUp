@@ -84,7 +84,7 @@ public class CollisionCheck {
     public static CollisionInfo1D CheckCollision1D(float x1, float x2, float d1, float d2)
     {
         float dir = Mathf.Sign(x2 - x1);
-        Debug.Log(string.Format("Distance {0}", (x2 + d2 * dir * -1) - x1));
+        //Debug.Log(string.Format("Distance {0}", (x2 + d2 * dir * -1) - x1));
 
         if (Mathf.Abs((x2 + d2 * dir * -1) - x1) < d1)
         {

@@ -47,8 +47,10 @@ namespace soleduo.CharacterComponent
                 target.ApplyHit(data.damage, (target.transform.position - character.transform.position).normalized * data.knockback);
             }
 
-            OnAttackConnects?.Invoke(!(targets == null || targets.Length <= 0));
-            OnAttackEnds?.Invoke(data.frameData.recovery);
+            bool attackConnects = !((targets == null || targets.Length <= 0));
+
+            OnAttackConnects?.Invoke(attackConnects);
+            OnAttackEnds?.Invoke(data.frameData.recovery + (attackConnects ? 0 : 45));
         }
     }
 }
