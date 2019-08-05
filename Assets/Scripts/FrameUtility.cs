@@ -4,15 +4,15 @@ using UnityEngine;
 
 public static class FrameUtility
 {
-    public static void WaitForFrame(int frameCount, System.Action callback)
+    public static LTDescr WaitForFrame(int frameCount, System.Action callback)
     {
         if(frameCount <= 0)
         {
             callback.Invoke();
-            return;
+            return null;
         }
 
         frameCount--;
-        LeanTween.delayedCall(Time.deltaTime, () => WaitForFrame(frameCount, callback));
+        return LeanTween.delayedCall(Time.deltaTime, () => WaitForFrame(frameCount, callback));
     }
 }

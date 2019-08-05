@@ -55,7 +55,7 @@ public class Character : MonoBehaviour
         {
             attacks[i] = new Attack(this, attackDataList[i]);
             attacks[i].OnAttackConnects += AttackConnects;
-            attacks[i].OnAttackEnds += AttackEnd;
+            attacks[i].OnAttackEnds += WaitForAttackEnds;
         }
 
         movement = new Movement(transform, defaultMoveSpeed);
@@ -89,16 +89,21 @@ public class Character : MonoBehaviour
         if (isConnected)
             attackCount++;
 
-        if (attackCount < attacks.Length)
-            isAttacking = !isConnected;
+        isAttacking = !isConnected;
     }
 
-    private void AttackEnd()
+    LTDescr isWaitingForAttackEnds;
+    private void WaitForAttackEnds(int frameCount)
     {
         Debug.Log("Attack Ends");
+        if (isWaitingForAttackEnds != null)
+            LeanTween.cancel(isWaitingForAttackEnds.id);
 
-        isAttacking = false;
-        attackCount = 0;
+        isWaitingForAttackEnds = FrameUtility.WaitForFrame(frameCount, () =>
+        {
+            isAttacking = false;
+            attackCount = 0;
+        });
     }
 
     protected void SetSpeed(Character target)

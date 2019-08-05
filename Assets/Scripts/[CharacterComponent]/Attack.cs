@@ -13,7 +13,7 @@ namespace soleduo.CharacterComponent
         public AttackData Data;
 
         public event System.Action<bool> OnAttackConnects;
-        public event System.Action OnAttackEnds;
+        public event System.Action<int> OnAttackEnds;
 
         public Attack(Character owner, AttackData attackData)
         {
@@ -25,7 +25,6 @@ namespace soleduo.CharacterComponent
         public void StartAttack(float dir)
         {
             FrameUtility.WaitForFrame(data.frameData.anticipation, () => DoAttack(dir));
-
         }
 
         public void DoAttack(float dir)
@@ -36,25 +35,20 @@ namespace soleduo.CharacterComponent
 
             Character[] targets = character.Targetting.GetAllEnemyInRange(dir, data.hitbox.x).ToArray();
 
-            if (targets == null || targets.Length <= 0)
-            {
-                OnAttackConnects.Invoke(false);
-                AttackEnds();
-                return;
-            }
+            //if (targets == null || targets.Length <= 0)
+            //{
+            //    OnAttackConnects.Invoke(false);
+            //    AttackEnds();
+            //    return;
+            //}
             
             foreach(Character target in targets)
             {
                 target.ApplyHit(data.damage, (target.transform.position - character.transform.position).normalized * data.knockback);
             }
 
-            OnAttackConnects.Invoke(true);
-            AttackEnds();
-        }
-
-        public void AttackEnds()
-        {
-            FrameUtility.WaitForFrame(data.frameData.recovery, () => OnAttackEnds.Invoke());
+            OnAttackConnects?.Invoke(!(targets == null || targets.Length <= 0));
+            OnAttackEnds?.Invoke(data.frameData.recovery);
         }
     }
 }

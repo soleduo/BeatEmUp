@@ -19,7 +19,7 @@ public class Enemy : Character {
     void Start () {
         player = GameManager.GetPlayer();
         attackRange = 1.25f;
-        defaultMoveSpeed = 3f;
+        defaultMoveSpeed = 2f;
 
         onDeath += Death;
 
