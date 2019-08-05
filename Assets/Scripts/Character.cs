@@ -126,7 +126,7 @@ public class Character : MonoBehaviour
 
         if (health <= 0)
         {
-            new Knockback(gameObject, knockForce * 3f, 6);
+            new Knockback(gameObject, knockForce + knockForce.normalized * 3f, 6);
             onDeath?.Invoke();
             return;
         }

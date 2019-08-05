@@ -17,7 +17,7 @@ namespace soleduo.CharacterComponent
         public List<Character> GetAllEnemyInRange(float direction, float attackDistance)
         {
             List<Character> targets = new List<Character>();
-            List<Character> targetList = SessionManager.instance.EnemyList.Keys.ToList<Character>();
+            List<Character> targetList = SessionManager.instance.EnemyList;
 
             foreach (Character character in targetList)
             {

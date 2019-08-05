@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         int i = inputStack.Pop();
-        Character target = GetNearestTargetDirected(i);
+        Character target = GetNearestTargetDirected(i, SessionManager.instance.EnemyList);
         player.AttackInit(i, target);
 
         consumeInput = null;
@@ -89,9 +89,12 @@ public class PlayerController : MonoBehaviour {
         return null;
     }
 
-    protected Character GetNearestTargetDirected(float dir)
+    protected Character GetNearestTargetDirected(float dir, List<Character> targets)
     {
-        foreach (Character c in FindObjectsOfType<Character>())
+        Character nearest = null;
+        float minDistance = 9999;
+
+        foreach (Character c in targets)
         {
             if (!c.gameObject.activeInHierarchy)
                 continue;
@@ -99,14 +102,17 @@ public class PlayerController : MonoBehaviour {
                 continue;
             if ((c.transform.position.x - player.transform.position.x) * dir < 0)
                 continue;
-            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.Data.attackRange, c.Data.radius).isCollide)
+            if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.Data.moveRange + player.Data.attackRange, c.Data.radius).isCollide)
                 continue;
 
+            float d = CollisionCheck.GetDistance(player.transform.position, c.transform.position);
+            Debug.Log("d " + d);
             //Debug.Log(c.name + " is found");
-            return c;
+            if(d < minDistance)
+                nearest = c;
         }
 
-        return null;
+        return nearest;
     }
 
     private void OnDrawGizmos()

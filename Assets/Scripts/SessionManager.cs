@@ -8,8 +8,8 @@ public class SessionManager : MonoBehaviour
 
     [SerializeField] List<Spawner> spawners;
 
-    private Dictionary<Enemy, int> enemyList;
-    public Dictionary<Enemy, int> EnemyList { get { return enemyList; } }
+    private List<Character> enemyList;
+    public List<Character> EnemyList { get { return enemyList; } }
     private int enemyCountLeft;
     private int enemyCountRight;
 
@@ -25,7 +25,7 @@ public class SessionManager : MonoBehaviour
         if (instance == null)
             instance = this;
 
-        enemyList = new Dictionary<Enemy, int>();
+        enemyList = new List<Character>();
     }
 
     void Start()
@@ -44,22 +44,12 @@ public class SessionManager : MonoBehaviour
     
     private void AddEnemy(Enemy e)
     {
-        if (e.transform.position.x > 0)
-            enemyCountRight++;
-        else
-            enemyCountLeft++;
-
-        enemyList.Add(e, (int)Mathf.Sign(e.transform.position.x));
+        enemyList.Add(e);
         e.SetActive(true);
     }
 
     private void RemoveEnemy(Enemy e)
     {
-        if (enemyList[e] > 0)
-            enemyCountRight--;
-        else
-            enemyCountLeft--;
-
         enemyList.Remove(e);
         e.SetActive(false);
     }
