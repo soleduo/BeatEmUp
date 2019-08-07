@@ -34,7 +34,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-Assets/LeanTween/
-Assets/Plugins/LeanTween/
 Assets/Standard Assets/
 Assets/Elf/
+Assets/LeanTween/
