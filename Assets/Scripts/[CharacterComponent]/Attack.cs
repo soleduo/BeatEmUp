@@ -50,7 +50,7 @@ namespace soleduo.CharacterComponent
             bool attackConnects = !((targets == null || targets.Length <= 0));
 
             OnAttackConnects?.Invoke(attackConnects);
-            OnAttackEnds?.Invoke(data.frameData.recovery + (attackConnects ? 0 : 45));
+            OnAttackEnds?.Invoke(data.frameData.recovery + (attackConnects ? 0 : 30));
         }
     }
 }

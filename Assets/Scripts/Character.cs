@@ -59,12 +59,12 @@ public class Character : MonoBehaviour
         isAttacking = true;
         if (isWaitingForAttackEnds != null)
         {
-            Debug.Log("Attack End is in queue, cancelling." + isWaitingForAttackEnds.uniqueId);
-            LeanTween.cancel(isWaitingForAttackEnds.uniqueId);
+            Debug.Log("Attack End is in queue, cancelling." + isWaitingForAttackEnds.Token.ToString());
+            isWaitingForAttackEnds.Cancel();
         }
 
         if (waitForCombo != null)
-            LeanTween.cancel(waitForCombo.uniqueId);
+            waitForCombo.Cancel();
 
         movement.MoveDone += () => {
             animator.SetTrigger("action" + (attackCount + 1));
@@ -73,31 +73,39 @@ public class Character : MonoBehaviour
         Movement(dir, target, defaulStep);
     }
 
-    LTDescr waitForCombo;
+    System.Threading.CancellationTokenSource waitForCombo;
     private void AttackConnects(bool isConnected)
     {
         Debug.Log("Attack Connects " + isConnected);
 
         attackCount++;
+        if(attackCount > 2)
+        {
+            attackCount = 0;
+        }
+
         isAttacking = !isConnected;
 
-        waitForCombo = FrameUtility.WaitForFrame(15, () => { isAttacking = true; });
+        waitForCombo = new System.Threading.CancellationTokenSource();
+
+        FrameUtility.DelayedCall(15, () => { isAttacking = true; },waitForCombo.Token);
     }
 
-    LTDescr isWaitingForAttackEnds;
+    System.Threading.CancellationTokenSource isWaitingForAttackEnds;
     private void WaitForAttackEnds(int frameCount)
     {
-        isWaitingForAttackEnds = FrameUtility.WaitForFrame(frameCount, () =>
+        isWaitingForAttackEnds = new System.Threading.CancellationTokenSource();
+        FrameUtility.DelayedCall(frameCount, () =>
         {
             isAttacking = false;
             attackCount = 0;
             Debug.Log("Attack Ends");
             isWaitingForAttackEnds = null;
             
-        });
+        }, isWaitingForAttackEnds.Token);
 
         OnComboWindowOpen?.Invoke();
-        Debug.Log("Start Waiting " + isWaitingForAttackEnds.uniqueId);
+        Debug.Log("Start Waiting " + isWaitingForAttackEnds.Token.ToString());
     }
 
     protected void Movement(float dir, Character target = null, int frameCount = -1)

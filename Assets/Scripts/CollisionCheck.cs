@@ -110,7 +110,7 @@ public class CollisionCheck {
 
     public static float GetDistance(Vector3 point1, Vector3 point2)
     {
-        return (point2 - point1).magnitude;
+        return Mathf.Abs((point2 - point1).magnitude);
     }
 
     public static Vector3 GetDirection(Vector3 point1, Vector3 point2)

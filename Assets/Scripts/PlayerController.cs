@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour {
                 continue;
             if (c == player)
                 continue;
-            if ((c.transform.position.x - player.transform.position.x) * dir < 0)
+            if ((c.transform.position.x-player.transform.position.x) * dir < 0)
                 continue;
             if (!CollisionCheck.CheckCollision(player.transform.position, c.transform.position, player.Data.moveRange + player.Data.attackRange, c.Data.radius).isCollide)
                 continue;
