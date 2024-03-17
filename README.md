@@ -1,5 +1,9 @@
 # Brawler Game Development #
 
+### Try it on itch.io ###
+
+https://soleduo.itch.io/beatemup-prototype
+
 ### Main Focus ###
 
 To achieve good fast-paced action-game feeling with minimum interaction. First development phase will focus on Player Control, Input feedback, and Interaction feedback. Editor tools to support this purposes shall be made.
